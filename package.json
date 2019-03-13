@@ -10,7 +10,8 @@
     "https": "^1.0.0",
     "intercom-client": "^2.10.4",
     "querystring": "^0.2.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "validator": "^10.11.0"
   },
   "devDependencies": {},
   "scripts": {
