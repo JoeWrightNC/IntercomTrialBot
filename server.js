@@ -507,7 +507,7 @@ app.post("/submit", (req, response) => {
         }
     }
 
-    if (body == true) {
+    if (body != null) {
         basicValidation()
     }    
 });
