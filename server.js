@@ -6,6 +6,8 @@ const Intercom = require('intercom-client');
 const https = require('https');
 const querystring = require('querystring');
 const request = require('request');
+const validator = require('validator');
+
 const app = express();
 
 var client = new Intercom.Client({ token: 'dG9rOjQxMzc0YjYzX2I1ZTVfNDkxYV85NmNmXzU0YzBiMzA3ZTQ5YToxOjA=' });
@@ -153,7 +155,7 @@ app.post("/submit", (req, response) => {
     function appTrialCreation() {
         //Currently Blocked by Reblaze, will come back to dev this later.  Need to get valid response, inspect body of response, validate trial creation, 
         // pass off to hubspot create function.  Need to talk to Andrew about how best to handle err if err for this scenario
-        /* request.post({
+        request.post({
             url: 'https://apps.samanage.com/signup.js',
             form: {
                 "nopost": true,
@@ -167,7 +169,7 @@ app.post("/submit", (req, response) => {
                 if (err) {
                     console.log(err);
                 }
-        }); */
+        });
 
         submitToHubby()
     }
@@ -178,7 +180,7 @@ app.post("/submit", (req, response) => {
 
 
         //EMAIL
-        /* https.get(`https://app.samanage.com/show.json?user[email]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://app.samanage.com/show.json?user[email]="${body.input_values.input_40_3}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -197,10 +199,10 @@ app.post("/submit", (req, response) => {
             });
             }).on('error', (e) => {
             console.error(e);
-        }); */
+        }); 
         
         //COMPANY NAME
-        /* https.get(`https://app.samanage.com/show.json?account[name]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://app.samanage.com/show.json?account[name]="${body.input_values.input_40_3}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -219,23 +221,12 @@ app.post("/submit", (req, response) => {
             });
             }).on('error', (e) => {
             console.error(e);
-        }); */
-
-        /* response.send({
-            canvas: {
-                content: {
-                    components: [
-                    { type: "text", text: "Chcek dem logs", 
-                    style: "header", align: "center" },
-                    ], 
-                },
-            },
-        }); */
+        }); 
         appTrialCreation()
     }
 
     function intercomValidation() {
-        /* client.users.find({ email: body.input_values.input_40_3 }, function (err,d) {
+        client.users.find({ email: body.input_values.input_40_3 }, function (err,d) {
             if (d) {
                 response.send({
                     canvas: {
@@ -272,7 +263,6 @@ app.post("/submit", (req, response) => {
                             }
                             else{
                                 appValidation();
-                                //submitToHubby()
                             }
                         })
                         if (err) {
@@ -287,21 +277,237 @@ app.post("/submit", (req, response) => {
             if (err) {
                 console.log(err)
             }
-        }); */
+        }); 
     }
 
-    //base function should call intercomValidation();
+    function basicValidation() {
+        if (body.input_values.input_40_2 == "" || body.input_values.input_40_3 == "" || body.input_values.input_40_4 == "" || body.input_values.input_40_5 == "") {
+            response.send({
+                canvas: {
+                    content: {
+                        components: [
+                        { type: "text", text: "Please complete all form fields and try again", 
+                        style: "header", align: "center" },
+                        {
+                            "type": "input", 
+                            "id": "input_40_3",
+                            "placeholder": "Work Email",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_4",
+                            "placeholder": "Company",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_2",
+                            "placeholder": "Full Name",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_5",
+                            "placeholder": "Phone Number",
+                            "value": "",
+                          },
+                          { 
+                            type: "button", 
+                            label: "Start a Free Trial", 
+                            id: "submit_button",
+                            action: {
+                              type: "submit"
+                            } 
+                          },
+                        ], 
+                    },
+                },
+            });
+        }
+        var emailCheck = validator.isEmail();
+        var companyCheck = validator.isAlphanumeric();
+        var nameCheck = validator.isAlpha();
+        var phoneCheck = validator.isAlphanumeric();
+        
+        if (emailCheck == false) {
+            response.send({
+                canvas: {
+                    content: {
+                        components: [
+                        { type: "text", text: "Please supply a valid email (i.e. example@host.com)", 
+                        style: "header", align: "center" },
+                        {
+                            "type": "input", 
+                            "id": "input_40_3",
+                            "placeholder": "Work Email",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_4",
+                            "placeholder": "Company",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_2",
+                            "placeholder": "Full Name",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_5",
+                            "placeholder": "Phone Number",
+                            "value": "",
+                          },
+                          { 
+                            type: "button", 
+                            label: "Start a Free Trial", 
+                            id: "submit_button",
+                            action: {
+                              type: "submit"
+                            } 
+                          },
+                        ], 
+                    },
+                },
+            });
+        } else if (companyCheck == false) {
+            response.send({
+                canvas: {
+                    content: {
+                        components: [
+                        { type: "text", text: "Please supply a valid email (i.e. example@host.com)", 
+                        style: "header", align: "center" },
+                        {
+                            "type": "input", 
+                            "id": "input_40_3",
+                            "placeholder": "Work Email",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_4",
+                            "placeholder": "Company",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_2",
+                            "placeholder": "Full Name",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_5",
+                            "placeholder": "Phone Number",
+                            "value": "",
+                          },
+                          { 
+                            type: "button", 
+                            label: "Start a Free Trial", 
+                            id: "submit_button",
+                            action: {
+                              type: "submit"
+                            } 
+                          },
+                        ], 
+                    },
+                },
+            });
+        } else if (nameCheck == false) {
+            response.send({
+                canvas: {
+                    content: {
+                        components: [
+                        { type: "text", text: "Please supply a valid email (i.e. example@host.com)", 
+                        style: "header", align: "center" },
+                        {
+                            "type": "input", 
+                            "id": "input_40_3",
+                            "placeholder": "Work Email",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_4",
+                            "placeholder": "Company",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_2",
+                            "placeholder": "Full Name",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_5",
+                            "placeholder": "Phone Number",
+                            "value": "",
+                          },
+                          { 
+                            type: "button", 
+                            label: "Start a Free Trial", 
+                            id: "submit_button",
+                            action: {
+                              type: "submit"
+                            } 
+                          },
+                        ], 
+                    },
+                },
+            });
+        } else if (phoneCheck == false) {
+            response.send({
+                canvas: {
+                    content: {
+                        components: [
+                        { type: "text", text: "Please supply a valid email (i.e. example@host.com)", 
+                        style: "header", align: "center" },
+                        {
+                            "type": "input", 
+                            "id": "input_40_3",
+                            "placeholder": "Work Email",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_4",
+                            "placeholder": "Company",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_2",
+                            "placeholder": "Full Name",
+                            "value": "",
+                          },
+                          {
+                            "type": "input", 
+                            "id": "input_40_5",
+                            "placeholder": "Phone Number",
+                            "value": "",
+                          },
+                          { 
+                            type: "button", 
+                            label: "Start a Free Trial", 
+                            id: "submit_button",
+                            action: {
+                              type: "submit"
+                            } 
+                          },
+                        ], 
+                    },
+                },
+            });
+        } else {
+            intercomValidation();
+        }
+    }
 
-    /* response.send({
-        canvas: {
-            content: {
-                components: [
-                { type: "text", text: "Chcek dem logs", 
-                style: "header", align: "center" },
-                ], 
-            },
-        },
-    }); */
-    submitToHubby();
-    
+    if (body == true) {
+        basicValidation()
+    }    
 });
