@@ -325,10 +325,10 @@ app.post("/submit", (req, response) => {
                 },
             });
         }
-        var emailCheck = validator.isEmail();
-        var companyCheck = validator.isAlphanumeric();
-        var nameCheck = validator.isAlpha();
-        var phoneCheck = validator.isAlphanumeric();
+        var emailCheck = validator.isEmail(body.input_values.input_40_3);
+        var companyCheck = validator.isAlphanumeric(body.input_values.input_40_4);
+        var nameCheck = validator.isAlpha(body.input_values.input_40_2);
+        var phoneCheck = validator.isAlphanumeric(body.input_values.input_40_5);
         
         if (emailCheck == false) {
             response.send({
