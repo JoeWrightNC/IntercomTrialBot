@@ -41,27 +41,47 @@ app.post("/initialize", (request, response) => {
         components: [
           {
             "type": "input", 
-            "id": "input_40_3",
+            "id": "userEmail",
             "placeholder": "Work Email",
             "value": "",
           },
           {
             "type": "input", 
-            "id": "input_40_4",
+            "id": "userCompany",
             "placeholder": "Company",
             "value": "",
           },
           {
             "type": "input", 
-            "id": "input_40_2",
+            "id": "userName",
             "placeholder": "Full Name",
             "value": "",
           },
           {
             "type": "input", 
-            "id": "input_40_5",
+            "id": "userPhone",
             "placeholder": "Phone Number",
             "value": "",
+          },
+          {
+            type: "single-select",
+            id: "gdprConsent",
+            label: "Do you consent to GDPR w/e text here?",
+            value: "no",
+            save_state: "unsaved",
+            disabled: false,
+            options: [
+              {
+                type: "option",
+                id: "gdprYes",
+                text: "Yes"
+              }, 
+              {
+                type: "option",
+                id: "gdprNo",
+                text: "No",
+              }
+            ],
           },
           { 
             type: "button", 
@@ -82,18 +102,18 @@ app.post("/submit", (req, response) => {
     console.log(body);
 
     function submitToHubby() {
-        var nameString = body.input_values.input_40_2
+        var nameString = body.input_values.userName
         var nameArr = nameString.split(" ");
         var firstName = nameArr.shift();
         var lastNameComma = nameArr.toString();   
         var lastName = lastNameComma.replace(","," ");
 
         var postData = querystring.stringify({
-            'email': body.input_values.input_40_3,
+            'email': body.input_values.userEmail,
             'firstname': firstName,
             'lastname': lastName,
-            'company': body.input_values.input_40_4,
-            'phone': body.input_values.input_40_5,
+            'company': body.input_values.userCompany,
+            'phone': body.input_values.userPhone,
             'geo_ip_address': body.user.last_seen_ip,
             //'continent_name': "Europe",
             'continent_code':body.user.location_data.continent_code,
@@ -159,10 +179,10 @@ app.post("/submit", (req, response) => {
             url: 'https://apps.samanage.com/signup.js',
             form: {
                 "nopost": true,
-                'user[name]': body.input_values.input_40_2,
-                'user[email]': body.input_values.input_40_3,
-                'user[phone]': body.input_values.input_40_5,
-                "account[name]": body.input_values.input_40_4,
+                'user[name]': body.input_values.userName,
+                'user[email]': body.input_values.userEmail,
+                'user[phone]': body.input_values.userPhone,
+                "account[name]": body.input_values.userCompany,
             }
         }, function (err, httpResponse, body) {
                 console.log(body)
@@ -180,7 +200,7 @@ app.post("/submit", (req, response) => {
 
 
         //EMAIL
-        https.get(`https://app.samanage.com/show.json?user[email]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://app.samanage.com/show.json?user[email]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -190,7 +210,7 @@ app.post("/submit", (req, response) => {
             }).on('error', (e) => {
             console.error(e);
         });
-        https.get(`https://appeu.samanage.com/show.json?user[email]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://appeu.samanage.com/show.json?user[email]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -202,7 +222,7 @@ app.post("/submit", (req, response) => {
         }); 
         
         //COMPANY NAME
-        https.get(`https://app.samanage.com/show.json?account[name]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://app.samanage.com/show.json?account[name]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -212,7 +232,7 @@ app.post("/submit", (req, response) => {
             }).on('error', (e) => {
             console.error(e);
         });
-        https.get(`https://appeu.samanage.com/show.json?account[name]="${body.input_values.input_40_3}"`, (res) => {
+        https.get(`https://appeu.samanage.com/show.json?account[name]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -226,7 +246,7 @@ app.post("/submit", (req, response) => {
     }
 
     function intercomValidation() {
-        client.users.find({ email: body.input_values.input_40_3 }, function (err,d) {
+        client.users.find({ email: body.input_values.userEmail }, function (err,d) {
             if (d) {
                 response.send({
                     canvas: {
@@ -240,15 +260,15 @@ app.post("/submit", (req, response) => {
                 });
             } else {
                 client.users.create({
-                    email: body.input_values.input_40_3
+                    email: body.input_values.userEmail
                 }, function(err,d) {
                     client.tags.tag({
                         name: 'trial',
                         users: [{
-                            email: body.input_values.input_40_3
+                            email: body.input_values.userEmail
                         }]
                     }, function(err,d) {
-                        client.companies.find({ name: body.input_values.input_40_4}, function(err,d) {
+                        client.companies.find({ name: body.input_values.userCompany}, function(err,d) {
                             if (d) {
                                 response.send({
                                     canvas: {
@@ -281,7 +301,7 @@ app.post("/submit", (req, response) => {
     }
 
     function basicValidation() {
-        if (body.input_values.input_40_2 == "" || body.input_values.input_40_3 == "" || body.input_values.input_40_4 == "" || body.input_values.input_40_5 == "") {
+        if (body.input_values.userName == "" || body.input_values.userEmail == "" || body.input_values.userCompany == "" || body.input_values.userPhone == "") {
             response.send({
                 canvas: {
                     content: {
@@ -290,25 +310,25 @@ app.post("/submit", (req, response) => {
                         style: "header", align: "center" },
                         {
                             "type": "input", 
-                            "id": "input_40_3",
+                            "id": "userEmail",
                             "placeholder": "Work Email",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_4",
+                            "id": "userCompany",
                             "placeholder": "Company",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_2",
+                            "id": "userName",
                             "placeholder": "Full Name",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_5",
+                            "id": "userPhone",
                             "placeholder": "Phone Number",
                             "value": "",
                           },
@@ -325,10 +345,10 @@ app.post("/submit", (req, response) => {
                 },
             });
         }
-        var emailCheck = validator.isEmail(body.input_values.input_40_3);
-        var companyCheck = validator.isAlphanumeric(body.input_values.input_40_4);
-        var nameCheck = validator.isAlpha(body.input_values.input_40_2);
-        var phoneCheck = validator.isAlphanumeric(body.input_values.input_40_5);
+        var emailCheck = validator.isEmail(body.input_values.userEmail);
+        var companyCheck = validator.isAlphanumeric(body.input_values.userCompany);
+        var nameCheck = validator.isAlpha(body.input_values.userName);
+        var phoneCheck = validator.isAlphanumeric(body.input_values.userPhone);
         
         if (emailCheck == false) {
             response.send({
@@ -339,25 +359,25 @@ app.post("/submit", (req, response) => {
                         style: "header", align: "center" },
                         {
                             "type": "input", 
-                            "id": "input_40_3",
+                            "id": "userEmail",
                             "placeholder": "Work Email",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_4",
+                            "id": "userCompany",
                             "placeholder": "Company",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_2",
+                            "id": "userName",
                             "placeholder": "Full Name",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_5",
+                            "id": "userPhone",
                             "placeholder": "Phone Number",
                             "value": "",
                           },
@@ -382,25 +402,25 @@ app.post("/submit", (req, response) => {
                         style: "header", align: "center" },
                         {
                             "type": "input", 
-                            "id": "input_40_3",
+                            "id": "userEmail",
                             "placeholder": "Work Email",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_4",
+                            "id": "userCompany",
                             "placeholder": "Company",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_2",
+                            "id": "userName",
                             "placeholder": "Full Name",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_5",
+                            "id": "userPhone",
                             "placeholder": "Phone Number",
                             "value": "",
                           },
@@ -425,25 +445,25 @@ app.post("/submit", (req, response) => {
                         style: "header", align: "center" },
                         {
                             "type": "input", 
-                            "id": "input_40_3",
+                            "id": "userEmail",
                             "placeholder": "Work Email",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_4",
+                            "id": "userCompany",
                             "placeholder": "Company",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_2",
+                            "id": "userName",
                             "placeholder": "Full Name",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_5",
+                            "id": "userPhone",
                             "placeholder": "Phone Number",
                             "value": "",
                           },
@@ -468,25 +488,25 @@ app.post("/submit", (req, response) => {
                         style: "header", align: "center" },
                         {
                             "type": "input", 
-                            "id": "input_40_3",
+                            "id": "userEmail",
                             "placeholder": "Work Email",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_4",
+                            "id": "userCompany",
                             "placeholder": "Company",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_2",
+                            "id": "userName",
                             "placeholder": "Full Name",
                             "value": "",
                           },
                           {
                             "type": "input", 
-                            "id": "input_40_5",
+                            "id": "userPhone",
                             "placeholder": "Phone Number",
                             "value": "",
                           },
