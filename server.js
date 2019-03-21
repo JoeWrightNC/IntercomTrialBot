@@ -35,7 +35,6 @@ const listener = app.listen(process.env.PORT, () => {
 */
 app.post("/initialize", (request, response) => {  
   const body = request.body;  
-  console.log(body);
   response.send({
     canvas: {
       content: {
@@ -525,7 +524,7 @@ app.post("/submit", (req, response) => {
         }
     }
 
-    if (body != null) {
+   /*  if (body != null) {
         basicValidation()
-    }    
+    }   */  
 });
