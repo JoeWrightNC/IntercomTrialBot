@@ -67,7 +67,7 @@ app.post("/initialize", (request, response) => {
             type: "single-select",
             id: "gdprConsent",
             label: "Do you consent to GDPR w/e text here?",
-            value: "no",
+            value: "No",
             save_state: "unsaved",
             disabled: false,
             options: [
