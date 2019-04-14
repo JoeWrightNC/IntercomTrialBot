@@ -10,7 +10,7 @@ const validator = require('validator');
 
 const app = express();
 
-var client = new Intercom.Client({ token: 'dG9rOjQxMzc0YjYzX2I1ZTVfNDkxYV85NmNmXzU0YzBiMzA3ZTQ5YToxOjA=' });
+var client = new Intercom.Client({ token: 'TOKEN_HERE' });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -130,8 +130,8 @@ app.post("/submit", (req, response) => {
         console.log(postData);
  
         var options = {
-            hostname: 'forms.hubspot.com', //4438fd01ecddfe106036bd469db1fa62
-            path: '/uploads/form/v2/41925/d5d367aa4dbb4501a63a6ed89e443fb0',
+            hostname: 'forms.hubspot.com', 
+            path: '/uploads/form/v2/REMOVEDFORSECUERITY',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -170,10 +170,8 @@ app.post("/submit", (req, response) => {
     }
 
     function appTrialCreation() {
-        //Currently Blocked by Reblaze, will come back to dev this later.  Need to get valid response, inspect body of response, validate trial creation, 
-        // pass off to hubspot create function.  Need to talk to Andrew about how best to handle err if err for this scenario
         request.post({
-            url: 'https://apps.samanage.com/signup.js',
+            url: 'REMOVED FOR SECURITY',
             form: {
                 "nopost": true,
                 'user[name]': body.input_values.userName,
@@ -192,12 +190,9 @@ app.post("/submit", (req, response) => {
     }
     
     function appValidation() {
-        //Currently Blocked by Reblaze, will come back to dev this later.  Need to get valid response, inspect body, find logic of if company/email exists to check 
-        //with if statement, if exists send response to messagebot, if not pass off to hubspot create function
-
 
         //EMAIL
-        https.get(`https://app.samanage.com/show.json?user[email]="${body.input_values.userEmail}"`, (res) => {
+        https.get(`REMOVEDFORSECURITYshow.json?user[email]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -207,7 +202,7 @@ app.post("/submit", (req, response) => {
             }).on('error', (e) => {
             console.error(e);
         });
-        https.get(`https://appeu.samanage.com/show.json?user[email]="${body.input_values.userEmail}"`, (res) => {
+        https.get(`REMOVEDFORSECURITY/show.json?user[email]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -219,7 +214,7 @@ app.post("/submit", (req, response) => {
         }); 
         
         //COMPANY NAME
-        https.get(`https://app.samanage.com/show.json?account[name]="${body.input_values.userEmail}"`, (res) => {
+        https.get(`REMOVEDFORSECURITYshow.json?account[name]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -229,7 +224,7 @@ app.post("/submit", (req, response) => {
             }).on('error', (e) => {
             console.error(e);
         });
-        https.get(`https://appeu.samanage.com/show.json?account[name]="${body.input_values.userEmail}"`, (res) => {
+        https.get(`REMOVEDFORSECURITY/show.json?account[name]="${body.input_values.userEmail}"`, (res) => {
             console.log('statusCode:', res.statusCode);
             console.log('headers:', res.headers);
 
@@ -524,7 +519,7 @@ app.post("/submit", (req, response) => {
         }
     }
 
-   /*  if (body != null) {
+     if (body != null) {
         basicValidation()
-    }   */  
+     }
 });
